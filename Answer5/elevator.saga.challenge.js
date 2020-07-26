@@ -1,38 +1,38 @@
 {
-    init: function(elevators, floors) {
+	init: function(elevators, floors) {
 		
 		/**
-        * Used to remove all matching elements in an array
-        * @param {item} item Item to be removed from the array
-        */
+		* Used to remove all matching elements in an array
+		* @param {item} item Item to be removed from the array
+		*/
 		Array.prototype.removeAll = function(item) {
-            for(var index = this.length; index--;) {
-                if(this[index] === item) {
-                    this.splice(index, 1);
-                }
-            }
-        }
+			for(var index = this.length; index--;) {
+				if(this[index] === item) {
+					this.splice(index, 1);
+				}
+			}
+		}
 		
 		/**
-        * Configure elevator listeners
-        * @param {elevator} elevator The elevator object that needs a listener configuration
-        */
-        function assignElevatorListener(elevator){
+		* Configure elevator listeners
+		* @param {elevator} elevator The elevator object that needs a listener configuration
+		*/
+		function assignElevatorListener(elevator){
 			
 			//Go to the requested floor after the floor button is pressed
-            elevator.on('floor_button_pressed', function(floorNum) {
-                elevator.goToFloor(floorNum);
-            });
+			elevator.on('floor_button_pressed', function(floorNum) {
+				elevator.goToFloor(floorNum);
+			});
 			
 			//called when the elevator is idle
 			elevator.on("idle", function() {
-                determineIfElevatorShouldGoUpOrDown(this);
-            });
+				determineIfElevatorShouldGoUpOrDown(this);
+			});
 			
 			//called before the elevator passes a floor
 			elevator.on("passing_floor", function(floorNum, direction) {
-                determineIfElevatorShouldStop(this, floorNum, direction);
-            });
+				determineIfElevatorShouldStop(this, floorNum, direction);
+			});
 			
 			//Resets the pending request for a floor when elevator stops on the floor
 			elevator.on("stopped_at_floor", function(floorNum) {
@@ -41,10 +41,10 @@
 		}
 		
 		/**
-        * Resets the direction indicator of the elevator and resets all pending requests for a floor
-        * @param {elevator} elevator The elevator that stopped
+		* Resets the direction indicator of the elevator and resets all pending requests for a floor
+		* @param {elevator} elevator The elevator that stopped
 		* @param {floorNum} floorNum The floor number at which the elevator has stopped
-        */
+		*/
 		function resetDirectionAndPendingRequests(elevator, floorNum) {
 			//Reset the direction for top and bottom floor
 			elevator.setDirection();
@@ -66,11 +66,11 @@
 		}
 		
 		/**
-        * Determines if the elevator should stop at the floor or not
-        * @param {elevator} elevator The elevator that needs direction to stop or not
+		* Determines if the elevator should stop at the floor or not
+		* @param {elevator} elevator The elevator that needs direction to stop or not
 		* @param {floorNum} floorNum The floor number the elevator is passing through
 		* @param {direction} direction The direction in which the elevator is moving
-        */
+		*/
 		function determineIfElevatorShouldStop(elevator, floorNum, direction) {
 			//Verify if the current floor is in the destinationQueue or not. If yes, the elevator should go to the floor first
 			//The elevator should stop at the current floor if there are any pending requests and if elevator has the load capacity
@@ -82,11 +82,11 @@
 		}
 		
 		/**
-        * Determines if the elevator should go up or down. 
+		* Determines if the elevator should go up or down. 
 		* The logic to determine the next floor to visit depends upon the direction of elevator 
 		* and the closest floor with pending requests
-        * @param {elevator} elevator The elevator that needs directions on where to go next
-        */
+		* @param {elevator} elevator The elevator that needs directions on where to go next
+		*/
 		function determineIfElevatorShouldGoUpOrDown(elevator) {
 			//Determine which floor to visit next
 			let floorToVisit = determineFloorClosestToElevatorWithPendingRequests(elevator);			
@@ -97,11 +97,11 @@
 		}
 		
 		/**
-        * Defines the logic to determine the next floor to visit. 
+		* Defines the logic to determine the next floor to visit. 
 		* Depending upon the direction of the elevator the closest floor with pending requests will be choosen
-        * @param {elevator} elevator The elevator that needs directions on where to go next
+		* @param {elevator} elevator The elevator that needs directions on where to go next
 		* @returns {number} floorNum The floor number the elevator should visit next
-        */
+		*/
 		function determineFloorClosestToElevatorWithPendingRequests(elevator) {
 			let allFloors = [];
 			let elevatorCurrFloor = elevator.currentFloor();
@@ -128,28 +128,28 @@
 		}
 		
 		/**
-        * Configure helper functions to the elevators
-        * @param {elevator} elevator The elevator object that needs helper extensions
-        */
+		* Configure helper functions to the elevators
+		* @param {elevator} elevator The elevator object that needs helper extensions
+		*/
 		function addHelperFunctionsToElevator(elevator) {
-		
+
 			//Sets the going up indicator for a given elevator
 			elevator.goingUp = function() {
-                this.goingDownIndicator(false);
-                this.goingUpIndicator(true);
-            }
-            
+				this.goingDownIndicator(false);
+				this.goingUpIndicator(true);
+			}
+			
 			//Sets the going down indicator for a given elevator
-            elevator.goingDown = function() {
-                this.goingDownIndicator(true);
-                this.goingUpIndicator(false);
-            }
+			elevator.goingDown = function() {
+				this.goingDownIndicator(true);
+				this.goingUpIndicator(false);
+			}
 			
 			//Sets both (up and down) indicators for a given elevator
 			elevator.goingAnywhere = function() {
-                this.goingDownIndicator(true);
-                this.goingUpIndicator(true);
-            }
+				this.goingDownIndicator(true);
+				this.goingUpIndicator(true);
+			}
 			
 			//Sets a priority destination for the elevator
 			elevator.goToPriorityDestination = function(floorNum) {
@@ -187,60 +187,60 @@
 		}
 		
 		/**
-        * Configure helper functions to the floor to convinently access pending requests
-        * @param {floor} floor The floor object that needs helper extensions
-        */
+		* Configure helper functions to the floor to convinently access pending requests
+		* @param {floor} floor The floor object that needs helper extensions
+		*/
 		function addHelperFunctionsToFloor(floor) {
-		
+
 			//determines if the floor has any pending Request
 			floor.pendingRequest = function() {
-                if(this.buttonState.up || this.buttonState.down) {
+				if(this.buttonState.up || this.buttonState.down) {
 					return true;
 				}
 				return false;
-            }          
+			}          
 
 			//reset pending requests depending on elevator's direction
 			floor.resetRequests = function() {
 				this.buttonState.up = false;
 				this.buttonState.down = false;
-            }			
+			}			
 		}
 		
-        /**
-        * Configure floor listeners
-        * @param {floor} floor The floor object that needs a listener configuration
-        */
-        function assignFloorListener(floor){
+		/**
+		* Configure floor listeners
+		* @param {floor} floor The floor object that needs a listener configuration
+		*/
+		function assignFloorListener(floor){
 			
 			//Define a variable to hold button's up and down arrow state
 			floor.buttonState = { up: false, down: false };
 			
 			//Set up button's state for a given floor
-            floor.on('up_button_pressed', function() {				
-                this.buttonState.up = true;
-            });
-            
+			floor.on('up_button_pressed', function() {				
+				this.buttonState.up = true;
+			});
+			
 			//Set down button's state for a given floor
-            floor.on('down_button_pressed', function() {				
-                this.buttonState.down = true;
-            });
-        };
+			floor.on('down_button_pressed', function() {				
+				this.buttonState.down = true;
+			});
+		};
 		
 		//Configure listener for each elevator
 		for (var elevatorNum = 0; elevatorNum < elevators.length; elevatorNum++){
 			elevators[elevatorNum].assignedFloor = elevatorNum;
-            assignElevatorListener(elevators[elevatorNum]);
+			assignElevatorListener(elevators[elevatorNum]);
 			addHelperFunctionsToElevator(elevators[elevatorNum]);
-        }
-		
+		}
+
 		//Configure listener for each floor
-        for (var floorNum = 0; floorNum < floors.length; floorNum++){
-            assignFloorListener(floors[floorNum]);
+		for (var floorNum = 0; floorNum < floors.length; floorNum++){
+			assignFloorListener(floors[floorNum]);
 			addHelperFunctionsToFloor(floors[floorNum]);
-        }   
-    },
-    update: function(dt, elevators, floors) {
-        // We normally don't need to do anything here
-    }
+		}   
+	},
+	update: function(dt, elevators, floors) {
+		// We normally don't need to do anything here
+	}
 }
